@@ -16,19 +16,42 @@ sub handle_start {
 		$lat = $tags{'lat'};
 		$lon = $tags{'lon'};
 
-		# print "$lat $lon\n";
-
 		if ($lat >= $minlat && $lat <= $maxlat && $lon >= $minlon && $lon <= $maxlon) {
-			print "node $lat $lon\n";
+			$lat{$tags{'id'}} = $lat;
+			$lon{$tags{'id'}} = $lon;
 		}
+	}
+
+	if ($element eq "way") {
+		@nd = ();
+	}
+
+	if ($element eq "nd") {
+		push @nd, $tags{'ref'};
 	}
 }
 
 sub handle_end {
+	my ($expat, $element) = @_;
 
+	if ($element eq "way") {
+		@lat = ();
+		@lon = ();
+
+		for $n (@nd) {
+			if (defined($lat{$n})) {
+				push @lat, $lat{$n};
+				push @lon, $lon{$n};
+			}
+		}
+
+		for ($i = 0; $i < $#lat; $i++) {
+			print "$lat[$i],$lon[$i] $lat[$i + 1],$lon[$i + 1]\n";
+		}
+	}
 }
 
-for $file (<562.osc.gz>) {
+for $file (<*.osc.gz>) {
 	print STDERR "$file\n";
 
 	$parser = new XML::Parser(Handlers => { Start => \&handle_start, End => \&handle_end, });

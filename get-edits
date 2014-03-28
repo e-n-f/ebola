@@ -1,0 +1,39 @@
+#!/usr/bin/perl
+
+use POSIX;
+use XML::Parser;
+
+$minlat = 7.6230;
+$minlon = -11.2217;
+$maxlat = 9.7201;
+$maxlon = -9.1661;
+
+sub handle_start {
+	my ($expat, $element, @tags) = @_;
+	my %tags = @tags;
+
+	if ($element eq "node") {
+		$lat = $tags{'lat'};
+		$lon = $tags{'lon'};
+
+		# print "$lat $lon\n";
+
+		if ($lat >= $minlat && $lat <= $maxlat && $lon >= $minlon && $lon <= $maxlon) {
+			print "node $lat $lon\n";
+		}
+	}
+}
+
+sub handle_end {
+
+}
+
+for $file (<562.osc.gz>) {
+	print STDERR "$file\n";
+
+	$parser = new XML::Parser(Handlers => { Start => \&handle_start, End => \&handle_end, });
+
+	open(IN, "zcat $file |");
+	$parser->parse(*IN);
+	close(IN);
+}

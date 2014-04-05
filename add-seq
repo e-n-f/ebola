@@ -1,0 +1,11 @@
+#!/usr/bin/perl
+
+while (<>) {
+	push @line, $_;
+}
+
+for (@line) {
+	@fields = split(/ /);
+
+	printf("%s %s 16:%d\n", $fields[0], $fields[1], $seq++ * 65535 / $#line);
+}

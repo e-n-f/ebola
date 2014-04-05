@@ -1,0 +1,17 @@
+#!/usr/bin/perl
+
+mkdir "frames";
+
+for ($i = 0; $i < 65536; $i += 3000) {
+	$n = sprintf("%07d", $i);
+
+	next if -f "frames/$n.png";
+	
+# 	system "./stitch -o frames/$n.png 10.3590 -12.0988 10.3879 -12.0643 15 http://a.tiles.mapbox.com/v3/brunosan.Mamou/{z}/{x}/{y}.png 'http://trafficways.org/cgi-bin/test.cgi?map=mamou-seq&opt=-xl$i%20-cFF3333%20-t150%20-B13:0.05917:1.23%20-G0.5&z={z}&x={x}&y={y}'";
+
+	#system "./stitch -o frames/$n.png 10.3590 -12.0988 10.3879 -12.064514576721191 15 http://a.tiles.mapbox.com/v3/brunosan.Mamou/{z}/{x}/{y}.png 'http://trafficways.org/cgi-bin/test.cgi?map=mamou-seq&opt=-xl$i%20-cFF3333%20-t150%20-B13:0.05917:1.23%20-G0.5&z={z}&x={x}&y={y}'";
+
+	#system "./stitch -o frames/$n.png 10.360803 -12.098800 10.386097 -12.064515 15 http://a.tiles.mapbox.com/v3/brunosan.Mamou/{z}/{x}/{y}.png 'http://trafficways.org/cgi-bin/test.cgi?map=mamou-seq&opt=-xl$i%20-cFF3333%20-t150%20-B13:0.05917:1.23%20-G0.5&z={z}&x={x}&y={y}'";
+	system "./stitch -o frames/$n.png 10.359960 -12.098800 10.386940 -12.064515 15 http://a.tiles.mapbox.com/v3/brunosan.Mamou/{z}/{x}/{y}.png 'http://trafficways.org/cgi-bin/test.cgi?map=mamou-seq&opt=-xl$i%20-cFF3333%20-t150%20-B13:0.05917:1.23%20-G0.5&z={z}&x={x}&y={y}'";
+}
+

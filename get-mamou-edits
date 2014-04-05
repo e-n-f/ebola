@@ -24,6 +24,7 @@ sub handle_start {
 	}
 
 	if ($element eq "way") {
+		$timestamp = $tags{'timestamp'};
 		@nd = ();
 	}
 
@@ -51,7 +52,7 @@ sub handle_end {
 
 		for ($i = 0; $i < $#lat; $i++) {
 			if ($lat[$i] != 0 && $lat[$i + 1] != 0) {
-				print "$lat[$i],$lon[$i] $lat[$i + 1],$lon[$i + 1] // $file\n";
+				print "$lat[$i],$lon[$i] $lat[$i + 1],$lon[$i + 1] // $file $timestamp\n";
 			}
 		}
 	}

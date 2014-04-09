@@ -1,0 +1,130 @@
+#!/usr/bin/perl
+
+use POSIX;
+use XML::Parser;
+
+# http://b.tiles.mapbox.com/v3/brunosan.Mamou/11/955/964.png
+$minlat = 10.3149192858132;
+$minlon = -12.12890625;
+$maxlat = 10.4878118820567;
+$maxlon = -11.953125;
+
+print <<EOF
+{
+"type": "FeatureCollection",
+"features": [
+EOF
+;
+
+sub handle_start {
+	my ($expat, $element, @tags) = @_;
+	my %tags = @tags;
+
+	if ($element eq "node") {
+		$lat = $tags{'lat'};
+		$lon = $tags{'lon'};
+
+		if ($lat >= $minlat && $lat <= $maxlat && $lon >= $minlon && $lon <= $maxlon) {
+			$lat{$tags{'id'}} = $lat;
+			$lon{$tags{'id'}} = $lon;
+		}
+	}
+
+	if ($element eq "way") {
+		$timestamp = $tags{'timestamp'};
+		@nd = ();
+	}
+
+	if ($element eq "nd") {
+		push @nd, $tags{'ref'};
+	}
+}
+
+sub handle_end {
+	my ($expat, $element) = @_;
+
+	if ($element eq "way") {
+		@lat = ();
+		@lon = ();
+		$any = 0;
+		$fail = 0;
+
+		for $n (@nd) {
+			if (defined($lat{$n})) {
+				push @lat, $lat{$n};
+				push @lon, $lon{$n};
+				$any = 1;
+			} else {
+				push @lat, 0;
+				push @lon, 0;
+			}
+		}
+
+		if ($any) {
+			while ($#lat >= 0) {
+				if ($lat[0] == 0) {
+					shift @lat;
+					shift @lon;
+				} elsif ($lat[$#lat] == 0) {
+					pop @lat;
+					pop @lon;
+				} else {
+					last;
+				}
+			}
+
+			$fail = 0;
+			for ($i = 0; $i <= $#lat; $i++) {
+				if ($lat[$i] == 0) {
+					$fail = 1;
+					last;
+				}
+			}
+
+			if (!$fail) {
+				if ($within) {
+					print ",\n";
+				}
+				$within = 1;
+
+				print "{ \"type\": \"Feature\", \"properties\": { \"file\": \"$file\", \"timestamp\": \"$timestamp\" },";
+				if ($nd[0] eq $nd[$#nd]) {
+					print "\"geometry\": { \"type\": \"Polygon\", ";
+				} else {
+					print "\"geometry\": { \"type\": \"LineString\", ";
+				}
+
+				print "\"coordinates\": [ ";
+
+				if ($nd[0] eq $nd[$#nd]) {
+					print "[ ";
+				}
+
+				for ($i = 0; $i <= $#lat; $i++) {
+					print "[ $lon[$i], $lat[$i] ]";
+					if ($i + 1 <= $#lat) {
+						print ", ";
+					}
+				}
+
+				if ($nd[0] eq $nd[$#nd]) {
+					print "] ";
+				}
+
+				print "] } }\n";
+			}
+		}
+	}
+}
+
+for $file (<*.osc.gz>) {
+	print STDERR "$file\n";
+
+	$parser = new XML::Parser(Handlers => { Start => \&handle_start, End => \&handle_end, });
+
+	open(IN, "zcat $file |");
+	$parser->parse(*IN);
+	close(IN);
+}
+
+print "] }\n";

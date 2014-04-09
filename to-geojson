@@ -1,0 +1,26 @@
+#!/usr/bin/perl
+
+print <<EOF
+{
+"type": "FeatureCollection",
+"features": [
+EOF
+;
+
+while (<>) {
+	chomp;
+
+	if ($within) {
+		print ",\n";
+	}
+	$within = 1;
+
+	($p1, $p2, $x, $file, $timestamp) = split(/ /);
+	($lat1, $lon1) = split(/,/, $p1);
+	($lat2, $lon2) = split(/,/, $p2);
+
+	print "{ \"type\": \"Feature\", \"properties\": { \"file\": \"$file\", \"timestamp\": \"$timestamp\" },";
+	print "\"geometry\": { \"type\": \"LineString\", \"coordinates\": [ [ $lon1, $lat1 ], [ $lon2, $lat2 ] ] } }\n";
+}
+
+print "] }\n";

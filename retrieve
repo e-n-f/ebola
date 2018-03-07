@@ -2,5 +2,5 @@
 
 for i in 559 560 561 562
 do
-	curl -O http://planet.osm.org/replication/day/000/000/$i.osc.gz
+	curl -O https://planet.osm.org/replication/day/000/000/$i.osc.gz
 done

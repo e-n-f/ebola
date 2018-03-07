@@ -2,5 +2,5 @@
 
 for i in {600..648}
 do
-	curl -O http://planet.openstreetmap.org/replication/hour/000/013/$i.osc.gz
+	curl -O https://planet.openstreetmap.org/replication/hour/000/013/$i.osc.gz
 done

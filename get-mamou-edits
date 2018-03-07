@@ -3,7 +3,7 @@
 use POSIX;
 use XML::Parser;
 
-# http://b.tiles.mapbox.com/v3/brunosan.Mamou/11/955/964.png
+# https://b.tiles.mapbox.com/v3/brunosan.Mamou/11/955/964.png
 $minlat = 10.3149192858132;
 $minlon = -12.12890625;
 $maxlat = 10.4878118820567;
